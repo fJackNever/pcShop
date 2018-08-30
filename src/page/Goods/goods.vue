@@ -2,21 +2,14 @@
   <div id="good">
     <div class="nav">
       <div class="w">
-        <a href="javascript:;" @click="reset()" :class="{ active: sortType == 1 }">综合排序</a>
-        <a href="javascript:;" @click="sort(1)" :class="{ active: sortType == 2}">价格从低到高</a>
-        <a href="javascript:;" @click="sort(-1)" :class="{ active: sortType == 3}">价格从高到低</a>
-        <div class="price-interval">
-          <input type="number" class="input" placeholder="价格" v-model="params.priceGt">
-          <span style="margin:0 5px"> - </span>
-          <input type="number" placeholder="价格" v-model="params.priceLte">
-          <y-button text="确定" classStyle="main-btn" @btnClick="reset" style="margin-left:10px;"></y-button>
-        </div>
+        <a href="javascript:;" @click="sort(1)" :class="{ active: sortType == 1}">价格从低到高</a>
+        <a href="javascript:;" @click="sort(-1)" :class="{ active: sortType == 2}">价格从高到低</a>
       </div>
     </div>
 
     <!--商品-->
     <div class="goods-box w" v-show="!loadingShow">
-      <mall-goods v-for="( item , i ) in computer" :key="i" :msg="item"></mall-goods>
+      <mall-goods v-for="( item , i ) in goodsList" :key="i" :msg="item"></mall-goods>
     </div>
     <div class="nodata w" v-show="loadingShow">
       <div class="nodata_word">
@@ -32,37 +25,33 @@
 
 <script>
   import YButton from '/components/YButton'
-  import { getComputer } from '/api/goods'
+  import { getgGoodsList } from '/api/goods'
   import mallGoods from '/components/mallGoods'
 
   export default{
     data(){
       return {
         sortType:1,
-        computer:[],
+        goodsList:[],
         timer: null,
         loadingShow:false,
         params:{
-          page:1,  //页码
           sort:'', //排序
-          priceGt:'', //最小价格
-          priceLte:'',
           keyword:''
         }
       }
     },
     methods:{
-      _getComputer(flag){
-        getComputer({ ...this.params }).then( res => {
+      _getgGoodsList(flag){
+        getgGoodsList({ ...this.params }).then( res => {
           if(res.result.count){
             this.loadingShow = false;
             let data = res.result.data;
             if(flag){
-              this.computer = this.computer.concat(data);
+              this.goodsList = this.goodsList.concat(data);
             }else{
-              this.computer = data;
+              this.goodsList = data;
             }
-
           }else{
             this.loadingShow = true;
           }
@@ -72,15 +61,13 @@
       reset(){
         this.sortType = 1;
         this.params.sort = '';
-        this.params.page = 1;
-        this._getComputer();
+        this._getgGoodsList();
       },
       //价格排序
       sort(v){
-        v===1 ? this.sortType = 2 : this.sortType = 3;
+        v===1 ? this.sortType = 1 : this.sortType = 2;
         this.params.sort = v;
-        this.params.page = 1;
-        this._getComputer()
+        this._getgGoodsList()
       }
     },
     created(){
@@ -88,7 +75,7 @@
       if(keyword){
         this.params.keyword = keyword;
       }
-      this._getComputer()
+      this._getgGoodsList()
     },
     components:{
       YButton,
@@ -98,17 +85,14 @@
       $route(to){
         this.sortType = 1;
         this.params = {
-          page: 1,  // 页码
           sort: '', // 排序
-          priceGt: '',  // 最小价格
-          priceLte: '',
           keyword: ''
         }
         let { keyword } = this.$route.query
-        if(keyword){
+        if(keyword ){
           this.params.keyword = keyword
         }
-        this._getComputer()
+        this._getgGoodsList()
       }
     }
   }

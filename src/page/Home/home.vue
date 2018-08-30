@@ -27,29 +27,12 @@
   import 'swiper/dist/css/swiper.min.css'
   import YShelf from '/components/shelf'
   import mallGoods from '/components/mallGoods'
-  import { productHome } from '/api'
+  import { productHome,getGoods } from '/api'
 
   export default{
     data(){
       return {
-        slides: [
-          {
-            img_href:"../static/images/iphone8.png",
-            link_href:'goodsDetails?productId=690105206'
-          },
-          {
-            img_href:'../static/images/iphonx.png',
-            link_href:'goodsDetails?productId=690128156'
-          },
-          {
-            img_href:'../static/images/xiaomi.png',
-            link_href:'goodsDetails?productId=731400976'
-          },
-          {
-            img_href:'../static/images/timg.jpg',
-            link_href:'goodsDetails?productId=149515868'
-          }
-        ],
+        slides:[],
         hot:[],
       }
     },
@@ -58,11 +41,14 @@
         autoplay:2000,
         loop:true,
         autoplayDisableOnInteraction : false,
+        observer:true,//修改swiper自己或子元素时，自动初始化swiper
+        observeParents:true//修改swiper的父元素时，自动初始化swiper
       })
 
       productHome().then(res => {
-        const { home_floors,home_hot } = res.result
-        this.hot = home_hot;
+        const { swiperpic,goodspic } = res
+        this.slides = swiperpic;
+        this.hot = goodspic;
       })
 
     },

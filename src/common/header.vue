@@ -125,7 +125,7 @@
 
   import YButton from '/components/YButton'
   import { mapMutations,mapState } from 'vuex'
-  import { loginOut } from '/api/index'
+  import { nav } from '/api'
   import { getCartList, cartDel } from '/api/goods'
   import { setStore,removeStore } from "/utils/storage"
 
@@ -148,60 +148,7 @@
             text: '收货地址',
             link: '/user/addressList'
           }],
-          navType:[{
-            text:'首页',
-            link:'/'
-          },{
-            text:'手机通讯',
-            link:'/goods',
-            query:{keyword:'手机通讯'},
-            children:[{
-              text:'手机',
-              link:'/goods',
-              query:{keyword:'手机'}
-            },{
-              text:'老人机',
-              link:'/goods',
-              query:{keyword:'老人机'}
-            },{
-              text:'通讯机',
-              link:'/goods',
-              query:{keyword:'通讯机'}
-            }]
-          },{
-            text:'数码',
-            link:'/goods',
-            query:{keyword:'数码'},
-            children:[{
-              text:'数码相机',
-              link:'/goods',
-              query:{keyword:'数码相机'}
-            },{
-              text:'单反相机',
-              link:'/goods',
-              query:{keyword:'单反相机'}
-            }]
-          },{
-            text:'电脑',
-            link:'/goods',
-            query:{keyword:'电脑'},
-            children:[{
-              text:'笔记本',
-              link:'/goods',
-              query:{keyword:'笔记本'},
-            },{
-              text:'台式机',
-              link:'/goods',
-              query:{keyword:'台式机'},
-            },{
-              text:'平板电脑',
-              link:'/goods',
-              query:{keyword:'平板电脑'}
-            }]
-          },{
-            text:'全部商品',
-            link:'/goods'
-          }],
+          navType:[],
           st:false,
         }
     },
@@ -294,29 +241,36 @@
       }
     },
     created(){
-      //计算底部导航菜单的宽度
-      this.$nextTick(() => {
-        var strArray = []  ,n = '';
 
-        for(let i=0; i<this.$refs.lidata.length; i++){
-          strArray[i] = []
+      nav().then(res => {
+        this.navType =  res
+
+        //计算底部导航菜单的宽度
+        this.$nextTick(() => {
+          var strArray = []  ,n = '';
+
+          for(let i=0; i<this.$refs.lidata.length; i++){
+            strArray[i] = []
             for(let j=0; j<this.$refs.lidata[i].childNodes.length; j++){
               strArray[i][j] = this.$refs.lidata[i].childNodes[j].innerText.length;
             }
 
-        }
-
-        for(let k=0; k<strArray.length;k++){
-          if(strArray[k].length>0){
-            //this.liwidth[k] = parseInt(Math.max.apply(null,strArray[k]))*14+40
-            this.$set(this.liwidth, k, parseInt(Math.max.apply(null,strArray[k]))*14+40);
-          }else{
-            this.liwidth[k] = 0
           }
 
-        }
+          for(let k=0; k<strArray.length;k++){
+            if(strArray[k].length>0){
+              //this.liwidth[k] = parseInt(Math.max.apply(null,strArray[k]))*14+40
+              this.$set(this.liwidth, k, parseInt(Math.max.apply(null,strArray[k]))*14+40);
+            }else{
+              this.liwidth[k] = 0
+            }
+
+          }
+
+        })
 
       })
+
     },
     mounted(){
       if(this.login){
@@ -329,6 +283,7 @@
       },300)
       window.addEventListener('scroll', this.navFixed)
       //window.addEventListener('resize', this.navFixed)
+
     },
 
     destroyed(){
